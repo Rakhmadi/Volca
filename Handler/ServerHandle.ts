@@ -3,14 +3,31 @@ import { ServerRequest,
          listenAndServe,
          HTTPOptions } from "../vendor/core/http/http.ts";
 
+import {Cookie,setCookie} from "../vendor/core/http/cookie.ts"
+
 import * as Eta from '../vendor/core/eta_Engine.ts';
 
 import { Router } from "./RouterHandle.ts"
 
 import {serveFile} from '../vendor/core/http/http_file_server.ts'
 
-import {msgStatus,errCatch} from './errrespHandle.ts'
-
+import {msgStatus,errCatch} from './errrespHandle.ts';
+export type ISameSite = "Strict" | "Lax" | "None";
+export interface ICookie {
+    // Name Cookie
+    name: string;
+    // Value Cookie
+    value: string;
+    // The maximum lifetime of the cookie as an HTTP-date timestamp 
+    expires?: Date;
+    // Number of seconds until the cookie expires
+    maxAge?: number;
+    domain?: string;
+    path?: string;
+    secure?: boolean;
+    httpOnly?: boolean;
+    sameSite?:ISameSite;
+  }
 interface IRedirect{
     status:number,
     location:string
@@ -34,19 +51,29 @@ export class Request extends ServerRequest {
      static method:string
      static RequestServ:any
      static params:any
+     static cookieList:Cookie
 
+     static setCookie(cokie:ICookie):void{
+        Request.cookieList = cokie
+        
+     }
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
         const header=new Headers(Respon.headers)
         const encoder = new TextEncoder()
+        let x = Request.cookieList
+        header.append("Set-Cookie",`${x.name}=${x.value}${x.expires ? ";Expires=" + x.expires : ""}${x.domain ? ";domain=" + x.domain : "" }${x.path ? ";path=" + x.path : ""}${x.maxAge ? ";Max-Age=" + x.maxAge : ""}${x.secure ? ";secure" : ""}${x.httpOnly ? " ;HttpOnly": ""}${x.sameSite ? ";SameSite="+x.sameSite : "" }`)
+
         header.append("Content-Type",Respon.content)
+        console.log(Request.cookieList);
+        
         
         Request.RequestServ.respond({
             status:Respon.status,
             body:encoder.encode(Respon.body),
             headers:header
         })
-
     }
+
      static async toView(file:string,data:any){
         const decoder = new TextDecoder("utf-8");
         const datax = await Deno.readFile(file);

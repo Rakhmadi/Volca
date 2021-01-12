@@ -1,9 +1,12 @@
 import {AppServe,Request,Router,Multipart,str_random,num_random} from "./mod.ts"
-
-
+import {create} from "https://deno.land/x/djwt@v2.0/mod.ts"
+import {Cookie,
+  setCookie,} from './vendor/core/http/cookie.ts'
 function Routerhandle(){
     Router.get('/x',async ()=>{
-        
+      const date = new Date(2040, 0, 1)
+      const cookie = { name: "QW", value: "CAT",expires:date};
+      Request.setCookie(cookie)
         return Request.toResponse({
             content:'text/plain',
             body:'Hello World'
@@ -41,10 +44,11 @@ function Routerhandle(){
          
      })
     
-     Router.get('/g',()=>{
+     Router.get('/g',async()=>{
+      const jwt = await create({ alg: "HS512", typ: "JWT" }, { foo: "bar" }, "secret")
        Request.toResponseJson([{
            "Query":Request.query,
-           "token":str_random(3000)
+           "token":jwt
         }],200,{})
      })
 
@@ -123,6 +127,6 @@ function Routerhandle(){
     
 AppServe(()=>{
     Routerhandle()
-},{port: 8000})
+},{hostname:'0.0.0.0',port: 80})
 
 
