@@ -5,7 +5,9 @@ import {Cookie,
 function Routerhandle(){
     Router.get('/x',async ()=>{
       const date = new Date(2040, 0, 1)
-      const cookie = { name: "QW", value: "CAT",expires:date};
+      const cookie = { name: "QWS", value: "CATS",expires:date};
+      console.log(Request.getCookie());
+      
       Request.setCookie(cookie)
         return Request.toResponse({
             content:'text/plain',

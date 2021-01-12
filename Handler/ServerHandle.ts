@@ -55,7 +55,12 @@ export class Request extends ServerRequest {
 
      static setCookie(cokie:ICookie):void{
         Request.cookieList = cokie
-        
+     }
+     static getCookie():object{
+        let CookieHeader = Request.RequestServ.headers.get("Cookie");
+        let toJ = '{"' + CookieHeader.replace(/;/g, '","') 
+        .replace(/=/g, '":"') + '"}'
+         return JSON.parse(toJ)
      }
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
         const header=new Headers(Respon.headers)
