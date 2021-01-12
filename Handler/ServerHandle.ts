@@ -3,7 +3,6 @@ import { ServerRequest,
          listenAndServe,
          HTTPOptions } from "../vendor/core/http/http.ts";
 
-import {Cookie,setCookie} from "../vendor/core/http/cookie.ts"
 
 import * as Eta from '../vendor/core/eta_Engine.ts';
 
@@ -12,7 +11,9 @@ import { Router } from "./RouterHandle.ts"
 import {serveFile} from '../vendor/core/http/http_file_server.ts'
 
 import {msgStatus,errCatch} from './errrespHandle.ts';
+
 export type ISameSite = "Strict" | "Lax" | "None";
+
 export interface ICookie {
     // Name Cookie
     name: string;
@@ -51,9 +52,10 @@ export class Request extends ServerRequest {
      static method:string
      static RequestServ:any
      static params:any
-     static cookieList:Cookie
+     static cookieList:ICookie
 
      static setCookie(cokie:ICookie):void{
+          
         Request.cookieList = cokie
      }
      static getCookie():object{
@@ -62,16 +64,37 @@ export class Request extends ServerRequest {
         .replace(/=/g, '":"') + '"}'
          return JSON.parse(toJ)
      }
+
+     static deleteCookie(name:string):void{
+        Request.setCookie({
+            name: name,
+            value: "",
+            expires: new Date(0),
+        })
+     }
+
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
         const header=new Headers(Respon.headers)
         const encoder = new TextEncoder()
+
         let x = Request.cookieList
-        header.append("Set-Cookie",`${x.name}=${x.value}${x.expires ? ";Expires=" + x.expires : ""}${x.domain ? ";domain=" + x.domain : "" }${x.path ? ";path=" + x.path : ""}${x.maxAge ? ";Max-Age=" + x.maxAge : ""}${x.secure ? ";secure" : ""}${x.httpOnly ? " ;HttpOnly": ""}${x.sameSite ? ";SameSite="+x.sameSite : "" }`)
+        if (x == undefined) {
+        }else{
+            let q:Array<string> = []
+            q.push(`${x.name}=${x.value}`)
+            q.push(`${x.expires ? ";Expires=" + x.expires : ""}`)
+            q.push(`${x.domain ? ";domain=" + x.domain : "" }`)
+            q.push(`${x.path ? ";path=" + x.path : ""}`)
+            q.push(`${x.maxAge ? ";Max-Age=" + x.maxAge : ""}`)
+            q.push(`${x.secure ? ";secure" : ""}`)
+            q.push(`${x.httpOnly ? " ;HttpOnly": ""}`)
+            q.push(`${x.sameSite ? ";SameSite="+x.sameSite : "" }`)
+            header.append("Set-Cookie",`${q.join(' ')}`)
+            
+        }
 
         header.append("Content-Type",Respon.content)
-        console.log(Request.cookieList);
-        
-        
+ 
         Request.RequestServ.respond({
             status:Respon.status,
             body:encoder.encode(Respon.body),

@@ -1,14 +1,9 @@
 import {AppServe,Request,Router,Multipart,str_random,num_random} from "./mod.ts"
 import {create} from "https://deno.land/x/djwt@v2.0/mod.ts"
-import {Cookie,
-  setCookie,} from './vendor/core/http/cookie.ts'
+
 function Routerhandle(){
     Router.get('/x',async ()=>{
-      const date = new Date(2040, 0, 1)
-      const cookie = { name: "QWS", value: "CATS",expires:date};
-      console.log(Request.getCookie());
-      
-      Request.setCookie(cookie)
+      Request.deleteCookie("QWS")
         return Request.toResponse({
             content:'text/plain',
             body:'Hello World'
