@@ -2,11 +2,14 @@ import {AppServe,Request,Router,Multipart,str_random,num_random} from "./mod.ts"
 import {create} from "https://deno.land/x/djwt@v2.0/mod.ts"
 
 function Routerhandle(){
+  Request.RequestServ.headers.set("Cookie", "full=of; tasty=chocolate");
     Router.get('/x',async ()=>{
       Request.deleteCookie("QWS")
+      // Request.setSession("q","dfsdafsdfadfdsaf");
+      // await Request.getSession("q")
         return Request.toResponse({
             content:'text/plain',
-            body:'Hello World'
+            body:`HEELO WORld`
         })
      })
 
@@ -22,9 +25,20 @@ function Routerhandle(){
      })
 
      Router.get(`/Article/:slug/Category/:category`,()=>{
+        Request.addResponseHeader({
+          "asdasd":"213213123"
+        })
+              
         Request.toResponseJson([{"Params":Request.params}],200,{})
-     })
-     
+     },[
+       (next:any)=>{
+        Request.addResponseHeader({
+          "asdasd":"213213123"
+        })
+        next()
+       }
+     ])
+
      Router.post('/post',async()=>{
          let form = await Multipart.ReadAll()
        

@@ -14,6 +14,7 @@ import {msgStatus,errCatch} from './errrespHandle.ts';
 
 export type ISameSite = "Strict" | "Lax" | "None";
 
+
 export interface ICookie {
     // Name Cookie
     name: string;
@@ -53,9 +54,14 @@ export class Request extends ServerRequest {
      static RequestServ:any
      static params:any
      static cookieList:ICookie
+     static HTTPoption:HTTPOptions
+     static HeaderList:any
+
+     static addResponseHeader(init?:HeadersInit){
+        Request.HeaderList = init
+     }
 
      static setCookie(cokie:ICookie):void{
-          
         Request.cookieList = cokie
      }
      static getCookie():object{
@@ -74,7 +80,7 @@ export class Request extends ServerRequest {
      }
 
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
-        const header=new Headers(Respon.headers)
+        const header=new Headers({...Respon.headers,...Request.HeaderList})
         const encoder = new TextEncoder()
 
         let x = Request.cookieList
@@ -94,7 +100,11 @@ export class Request extends ServerRequest {
         }
 
         header.append("Content-Type",Respon.content)
- 
+        let v =Request.HeaderList
+        for (let index = 0; index < v.length; index++) {
+            
+        }
+         
         Request.RequestServ.respond({
             status:Respon.status,
             body:encoder.encode(Respon.body),
@@ -120,6 +130,7 @@ export class Request extends ServerRequest {
              })
          })
      }
+
      static toResponseJson(Json:Array<any> | any ,status:number,headers:HeadersInit = {}){
         Request.toResponse({
             content:'application/json',
@@ -236,9 +247,13 @@ async function RouterHandle(req:any){
      }
 }
 
+
+
 export function AppServe(f:Function,opt:HTTPOptions){
+
     listenAndServe(opt,(req)=>{
         try {
+            
             handle(req)
             f()
             RouterHandle(req)
@@ -249,6 +264,10 @@ export function AppServe(f:Function,opt:HTTPOptions){
                 body:`${error}`
             })
         }
+        
+        
     })
-}
 
+    console.log(`${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
+
+}

@@ -1,4 +1,4 @@
-import { Request,TMiddleware } from "./ServerHandle.ts"
+import { Request } from "./ServerHandle.ts"
 
 interface IRoute{
     path:string,
@@ -62,7 +62,7 @@ class Route{
             method:Method.GET,
             handle:controll,
             middleware:middleware
-        })
+        })         
     }
      public post(pathx:string,controll:Function,middleware:Array<Function> = []){
          this.TableRoute.push({
