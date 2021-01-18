@@ -1,7 +1,7 @@
 import {AppServe,Request,Router,Multipart,str_random,num_random} from "./mod.ts"
 import {create} from "https://deno.land/x/djwt@v2.0/mod.ts"
 
-function Routerhandle(){
+async function Routerhandle(){
   Request.RequestServ.headers.set("Cookie", "full=of; tasty=chocolate");
     Router.get('/x',async ()=>{
       Request.deleteCookie("QWS")
@@ -88,7 +88,7 @@ function Routerhandle(){
         for (const iterator of g) {
             m+=`<li>${iterator.title}</li>`+`<li>${iterator.body}</li>`+`<br>`
         }
-        await Request.toView('tmp.eta.html',{x:m,y:`${str_random(4)}`,d:[{
+        await Request.toView('tmsp.eta.html',{x:m,y:`${str_random(4)}`,d:[{
             "userId": 1,
             "id": 1,
             "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
@@ -136,8 +136,6 @@ function Routerhandle(){
 
 
     
-AppServe(()=>{
-    Routerhandle()
-},{hostname:'0.0.0.0',port: 80})
-
-
+AppServe(async()=>{
+    await Routerhandle()
+},{hostname:'0.0.0.0',port: 8080})

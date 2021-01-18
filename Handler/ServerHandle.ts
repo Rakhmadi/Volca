@@ -101,10 +101,7 @@ export class Request extends ServerRequest {
 
         header.append("Content-Type",Respon.content)
         let v =Request.HeaderList
-        for (let index = 0; index < v.length; index++) {
-            
-        }
-         
+     
         Request.RequestServ.respond({
             status:Respon.status,
             body:encoder.encode(Respon.body),
@@ -113,21 +110,29 @@ export class Request extends ServerRequest {
     }
 
      static async toView(file:string,data:any){
-        const decoder = new TextDecoder("utf-8");
-        const datax = await Deno.readFile(file);
-        Request.toResponse({
-            status:200,
-            content:' text/html; charset=UTF-8',
-            body:EtaEngine(decoder.decode(datax),data)
-        })
+        try{
+           const decoder = new TextDecoder("utf-8");
+           const datax = await Deno.readFile(file);
+           Request.toResponse({
+               status:200,
+               content:' text/html; charset=UTF-8',
+               body:EtaEngine(decoder.decode(datax),data)
+           })
+        }catch(error){
+            return Request.toResponse({
+                status:500,
+                content:'text/html; charset=utf-8',
+                body:errCatch("File Not Found",Request)
+            })
+        }
      }
 
      static toRedirect(status:number, toLocation:string){
          Request.toResponse({
              status:status,
-             headers:new Headers({
+             headers:{
                  "Location":toLocation
-             })
+             }
          })
      }
 
@@ -137,6 +142,7 @@ export class Request extends ServerRequest {
             body:JSON.stringify(Json),
             headers:headers
         })
+        
      }
 }
 
@@ -249,11 +255,10 @@ async function RouterHandle(req:any){
 
 
 
-export function AppServe(f:Function,opt:HTTPOptions){
+export async function AppServe(f:Function,opt:HTTPOptions):Promise<any>{
 
     listenAndServe(opt,(req)=>{
         try {
-            
             handle(req)
             f()
             RouterHandle(req)
