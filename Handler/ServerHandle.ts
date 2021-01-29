@@ -109,6 +109,8 @@ export class Request extends ServerRequest {
         })
     }
 
+
+
      static async toView(file:string,data:any){
         try{
            const decoder = new TextDecoder("utf-8");
@@ -119,7 +121,10 @@ export class Request extends ServerRequest {
                body:EtaEngine(decoder.decode(datax),data)
            })
         }catch(error){
+           
+                
             return Request.toResponse({
+               
                 status:500,
                 content:'text/html; charset=utf-8',
                 body:errCatch("File Not Found",Request)
@@ -142,7 +147,6 @@ export class Request extends ServerRequest {
             body:JSON.stringify(Json),
             headers:headers
         })
-        
      }
 }
 
@@ -166,15 +170,12 @@ function handle(req:ServerRequest){
          let getQuery = '{"' + decodeURI(search) 
          .replace(/"/g, '\\"').replace(/&/g, '","') 
          .replace(/=/g, '":"') + '"}'
-
-         if (getQuery === '{"undefined"}') {
-
+         
+         
+         if (getQuery === '{"undefined"}' || getQuery === '{""}') {
             Request.query = "null"
-
          } else {
-
             Request.query =JSON.parse(getQuery)
-
          }
          
     }
@@ -239,6 +240,7 @@ async function RouterHandle(req:any){
             NotFoundReq()
             
            }else{
+
             return Request.toResponse({
                 status:500,
                 content:'text/html; charset=utf-8',
@@ -255,7 +257,7 @@ async function RouterHandle(req:any){
 
 
 
-export async function AppServe(f:Function,opt:HTTPOptions):Promise<any>{
+export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions):Promise<any>{
 
     listenAndServe(opt,(req)=>{
         try {
@@ -264,15 +266,14 @@ export async function AppServe(f:Function,opt:HTTPOptions):Promise<any>{
             RouterHandle(req)
             Router.TableRoute = []
         } catch (error) {
+            
+            
             req.respond({
                 status:500,
                 body:`${error}`
             })
-        }
-        
-        
+        }        
     })
 
     console.log(`${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
-
 }
