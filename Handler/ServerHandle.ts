@@ -47,12 +47,12 @@ export type TMiddleware = (next:()=>void)=>any;
 export class Request extends ServerRequest {
      static body:any
      static path:string
-     static query:string
+     static query:object
      static redirect:IRedirect
      static headers:Headers
      static method:string
      static RequestServ:any
-     static params:any
+     static params:object
      static cookieList:ICookie
      static HTTPoption:HTTPOptions
      static HeaderList:any
@@ -61,12 +61,16 @@ export class Request extends ServerRequest {
         Request.HeaderList = init
      }
 
+     static getHeader(name:string){
+         return Request.RequestServ.headers.get(name);
+     }
+
      static setCookie(cokie:ICookie):void{
         Request.cookieList = cokie
      }
      static getCookie():object{
         let CookieHeader = Request.RequestServ.headers.get("Cookie");
-        let toJ = '{"' + CookieHeader.replace(/;/g, '","') 
+        let toJ = '{"'+CookieHeader.replace(/;/g, '","') 
         .replace(/=/g, '":"') + '"}'
          return JSON.parse(toJ)
      }
@@ -100,8 +104,7 @@ export class Request extends ServerRequest {
         }
 
         header.append("Content-Type",Respon.content)
-        let v =Request.HeaderList
-     
+
         Request.RequestServ.respond({
             status:Respon.status,
             body:encoder.encode(Respon.body),
@@ -111,7 +114,7 @@ export class Request extends ServerRequest {
 
 
 
-     static async toView(file:string,data:any){
+     static async toView(file:string,data:any):Promise<any>{
         try{
            const decoder = new TextDecoder("utf-8");
            const datax = await Deno.readFile(file);
@@ -173,7 +176,7 @@ function handle(req:ServerRequest){
          
          
          if (getQuery === '{"undefined"}' || getQuery === '{""}') {
-            Request.query = "null"
+            Request.query = {}
          } else {
             Request.query =JSON.parse(getQuery)
          }
@@ -206,8 +209,11 @@ async function RouterHandle(req:any){
     }
     
     for (const r of Router.TableRoute) {
+        
         if (r.path === Request.path && r.method === Request.method) {
             try {
+               
+                
 
                 function Corelayer(next:any){
                     r.handle()
@@ -231,7 +237,7 @@ async function RouterHandle(req:any){
      if (urlPath[1] === 'public') {
        try {
 
-            const FileContent= await serveFile(req,`${Deno.cwd()}/${urlPath[2]}`)
+            const FileContent= await serveFile(req,`${Deno.cwd()}/${Request.path}`)
             return req.respond(FileContent)
 
        } catch (error) {

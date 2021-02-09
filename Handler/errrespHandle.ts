@@ -81,6 +81,10 @@ export function errCatch(msg:any,rg:any){
         <div class="info-iner-box">
             <div>
                 <h1>Information & Environment</h1>
+                <h3>Version</h3>
+                <p>Deno : ${Deno.version.deno}</p>
+                <p>V8 : ${Deno.version.v8}</p>
+                <p>Typescript : ${Deno.version.typescript}</p>
                 <h3>Path</h3>
                 <p style="font-size:14px">${rg.path}</p>
                 <h3>Method</h3>

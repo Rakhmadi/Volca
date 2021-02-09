@@ -7,9 +7,9 @@ export function str_random(length:number) {
     for ( let i = 0; i < length; i++ ) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
-    return result;
+    return result.replace(/\s/g, "")
 }
 export function num_random(min:number, max:number) {
     const x = String(Math.random() * (max - min) + min)
     return Number(x.replace(/\./g, ''))
-  }
+}

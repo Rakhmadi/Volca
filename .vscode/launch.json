@@ -8,7 +8,7 @@
             "name": "Launch Deno",
             "program": "${workspaceFolder}/x.ts",
             "cwd": "${workspaceFolder}",
-            "runtimeExecutable": "deno",
+            "runtimeExecutable": "denon",
             "runtimeArgs": [
                 "run",
                 "--allow-all",
