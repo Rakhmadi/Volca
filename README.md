@@ -53,13 +53,6 @@ AppServe(async()=>{
 >```ts
 >http://localhost:8080/Article/How-to-make-web/Category/web-tech
 >```
-> **Return**
->```json
->{
->   "slug": "How-to-make-web",
->   "category": "web-tech"
->}
->```
 
 >**Adding middleware to the router**
 >```ts
@@ -68,12 +61,12 @@ AppServe(async()=>{
 >
 >Example
 >```ts
->function fucn1(next:any){
+>function func1(next:any){
 >   console.log("middleware 1");
 >   next()         
 >}
 >
-> function fucn2(next:any){
+> function func2(next:any){
 >   console.log("middleware 2");
 >   next()         
 >}

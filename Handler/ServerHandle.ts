@@ -83,6 +83,19 @@ export class Request extends ServerRequest {
         })
      }
 
+     static async formField(){
+        const x = await Deno.readAll(Request.body)
+        const decoder =new TextDecoder()
+        const vol =decoder.decode(x)
+        
+        if (Request.RequestServ.headers.get("Content-Type").split(";")[0] === "application/x-www-form-urlencoded") {
+            const g = JSON.parse('{"' + vol.replace(/&/g, "\",\"").replace(/=/g,"\":\"") + '"}')
+            return g
+        }else{
+            return 'null'
+        }
+     }
+
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
         const header=new Headers({...Respon.headers,...Request.HeaderList})
         const encoder = new TextEncoder()
@@ -103,7 +116,7 @@ export class Request extends ServerRequest {
             
         }
 
-        header.append("Content-Type",Respon.content)
+        header.append("Content-Type",Respon.content == undefined ? "text/plain charset=utf-8" : Respon.content)
 
         Request.RequestServ.respond({
             status:Respon.status,
@@ -212,9 +225,6 @@ async function RouterHandle(req:any){
         
         if (r.path === Request.path && r.method === Request.method) {
             try {
-               
-                
-
                 function Corelayer(next:any){
                     r.handle()
                     next()
@@ -264,7 +274,6 @@ async function RouterHandle(req:any){
 
 
 export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions):Promise<any>{
-
     listenAndServe(opt,(req)=>{
         try {
             handle(req)
@@ -272,8 +281,6 @@ export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions):Promise<any>{
             RouterHandle(req)
             Router.TableRoute = []
         } catch (error) {
-            
-            
             req.respond({
                 status:500,
                 body:`${error}`
