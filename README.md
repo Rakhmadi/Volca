@@ -162,7 +162,7 @@ AppServe(async()=>{
 > > >      "Access-Control-Allow-Headers"  :  "*",
 > > >      "Access-Control-Allow-Origin"  :  "*"
 > > >   },
->  > >   content:'text/plain'  // see in https://www.iana.org/assignments/media-types/media-types.xhtml
+>  > >   content:'text/plain', // see in https://www.iana.org/assignments/media-types/media-types.xhtml
 > > >   body:'Hello World',
 > > >   
 > > >})
