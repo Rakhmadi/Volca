@@ -5,7 +5,7 @@ Simple Deno Web Framework
 ## Basic Usage
 
 ```ts
-import {AppServe,Request,Router} from "./mod.ts"
+import {AppServe,Request,Router} from "https://deno.land/x/volca@v1.1.0/mod.ts"
 
 AppServe(async()=>{
     Router.get('/',()=>{

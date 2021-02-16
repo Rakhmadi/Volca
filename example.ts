@@ -1,4 +1,4 @@
-import * as Volca from "./mod.ts"
+import * as Volca from "https://deno.land/x/volca@v1.1.0/mod.ts"
 
 await Volca.AppServe(async()=>{
   
