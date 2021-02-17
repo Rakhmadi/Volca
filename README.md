@@ -200,6 +200,10 @@ AppServe(async()=>{
 > > >
 > > >
 
+list of dependencies used
+* https://github.com/deligenius/multiparser - multipart/form-data parser for Deno servers
+* https://github.com/eta-dev/eta - Embedded JS template engine for Node, Deno, and the browser. Lighweight, fast, and pluggable. Written in TypeScript
+* https://github.com/eveningkid/denodb - MySQL, SQLite, MariaDB, PostgreSQL and MongoDB ORM for Deno
 
 ## License
 MIT License

@@ -166,7 +166,7 @@ export class Request extends ServerRequest {
      }
 }
 
-function EtaEngine(FileString:string,data:any){
+function EtaEngine(FileString:string,data:object = {}){
     return Eta.render(FileString,data)
 }
 

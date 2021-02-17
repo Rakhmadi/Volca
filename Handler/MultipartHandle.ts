@@ -19,7 +19,7 @@ export class Multipart{
             return JSON.parse(f)
         } else {
             return `Multipart: NULL because header ${Multipart.TypeHeader}`
-        } 
+        }
     }
     static async ReadFiles(){
         if (Multipart.GetingHeaderValid()) {
@@ -28,7 +28,7 @@ export class Multipart{
             return JSON.parse(f)
         } else {
             return `Multipart: NULL because header ${Multipart.TypeHeader}`
-        } 
+        }
         
     }
     static async ReadAll(){
