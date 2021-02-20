@@ -207,11 +207,18 @@ AppServe(async()=>{
 > > > Example Url : http://localhost:8080/query?name=Branch&products=[Journeys,Email,Universal%20Ads]
 > > > 
 > > > return :
+> > > ``` 
 > > >    {
 > > >       "name": "Branch",
 > > >       "products": "[Journeys,Email,Universal Ads]"
 > > >    }
-> > >
+> > >    ```
+> >
+> > >```ts
+> > >  async formField():Promise<object>
+> > >```
+> > > Get form Field 'application/x-www-form-urlencoded'
+
 
 list of dependencies used
 * https://github.com/deligenius/multiparser - multipart/form-data parser for Deno servers
