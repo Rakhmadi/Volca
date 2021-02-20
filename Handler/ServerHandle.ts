@@ -1,6 +1,6 @@
 import { ServerRequest, 
          Response as ServerResponse ,
-         listenAndServe,
+         listenAndServe,serve,
          HTTPOptions } from "../vendor/core/http/http.ts";
 
 
@@ -13,7 +13,6 @@ import {serveFile} from '../vendor/core/http/http_file_server.ts'
 import {msgStatus,errCatch} from './errrespHandle.ts';
 
 export type ISameSite = "Strict" | "Lax" | "None";
-
 
 export interface ICookie {
     // Name Cookie
@@ -44,7 +43,7 @@ interface IRes{
 
 export type TMiddleware = (next:()=>void)=>any;
 
-export class Request extends ServerRequest {
+export class Request {
      static body:any
      static path:string
      static query:object
@@ -83,7 +82,22 @@ export class Request extends ServerRequest {
         })
      }
 
-     static async formField(){
+     static getQuery():object{
+        
+        let search = Request.RequestServ.url.split('?')[1];   
+
+        let getQuery = '{"' + decodeURI(search) 
+        .replace(/"/g, '\\"').replace(/&/g, '","') 
+        .replace(/=/g, '":"') + '"}'
+
+        if (getQuery === '{"undefined"}' || getQuery === '{""}') {
+           return {}
+        } else {
+          return JSON.parse(getQuery)
+        }
+     }
+
+     static async formField():Promise<object> {
         const x = await Deno.readAll(Request.body)
         const decoder =new TextDecoder()
         const vol =decoder.decode(x)
@@ -92,13 +106,12 @@ export class Request extends ServerRequest {
             const g = JSON.parse('{"' + vol.replace(/&/g, "\",\"").replace(/=/g,"\":\"") + '"}')
             return g
         }else{
-            return 'null'
+            return {}
         }
      }
 
      static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
         const header=new Headers({...Respon.headers,...Request.HeaderList})
-        const encoder = new TextEncoder()
 
         let x = Request.cookieList
         if (x == undefined) {
@@ -113,14 +126,13 @@ export class Request extends ServerRequest {
             q.push(`${x.httpOnly ? " ;HttpOnly": ""}`)
             q.push(`${x.sameSite ? ";SameSite="+x.sameSite : "" }`)
             header.append("Set-Cookie",`${q.join(' ')}`)
-            
         }
 
         header.append("Content-Type",Respon.content == undefined ? "text/plain charset=utf-8" : Respon.content)
 
         Request.RequestServ.respond({
             status:Respon.status,
-            body:encoder.encode(Respon.body),
+            body:new TextEncoder().encode(Respon.body),
             headers:header
         })
     }
@@ -171,45 +183,16 @@ function EtaEngine(FileString:string,data:object = {}){
 }
 
 function stepper (...steps:TMiddleware[]):any{
-
     const [ step, ...next] = steps
     return (step) ? step(()=>stepper(...next)):undefined
-
 }
 
 function handle(req:ServerRequest){
-
-    function QuerySet(UrlParser:any){ 
-
-         let search = UrlParser.search.split('?')[1];   
-
-         let getQuery = '{"' + decodeURI(search) 
-         .replace(/"/g, '\\"').replace(/&/g, '","') 
-         .replace(/=/g, '":"') + '"}'
-         
-         
-         if (getQuery === '{"undefined"}' || getQuery === '{""}') {
-            Request.query = {}
-         } else {
-            Request.query =JSON.parse(getQuery)
-         }
-         
-    }
-
-    let n:any =new URL(`http://${req.headers.get("Host")}${req.url}`)
-    QuerySet(n)
-    
     Request.RequestServ = req
-
     Request.body = req.body
-
-    Request.path = n.pathname
-
+    Request.path = req.url.split('?')[0]
     Request.headers = req.headers
-
     Request.method = req.method
-
-
 }
 
 async function RouterHandle(req:any){
@@ -274,19 +257,19 @@ async function RouterHandle(req:any){
 
 
 export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions):Promise<any>{
-    listenAndServe(opt,(req)=>{
+    const s = serve(opt);
+    console.log(`\u001b[34;1m ⚙️  App Runing at : http://${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
+    for await (const req of s) {
         try {
-            handle(req)
-            f()
-            RouterHandle(req)
+             handle(req)
+             f()
+             RouterHandle(req)
             Router.TableRoute = []
         } catch (error) {
             req.respond({
                 status:500,
                 body:`${error}`
             })
-        }        
-    })
-
-    console.log(`${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
+        }      
+  }
 }

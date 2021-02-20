@@ -87,7 +87,6 @@ AppServe(async()=>{
 > > |--|--|
 > > | ``` path:string ``` | Get path of URL |
 > > | ``` method:string ``` | Get HTTP request method |
-> > | ``` query:object ``` | Get Query from URL |
 > > | ``` params:object ``` | Get Router parameters |
 > > | ``` body:any ``` | Access Body Request |
 >
@@ -198,6 +197,20 @@ AppServe(async()=>{
 > > > Request.toResponseJson({ favoriteCake: 'Chocolate!'  },200)
 > > > ```
 > > >
+> > >
+> >
+> > >```ts
+> > >  getQuery():object
+> > >```
+> > > Get search query url
+> > >
+> > > Example Url : http://localhost:8080/query?name=Branch&products=[Journeys,Email,Universal%20Ads]
+> > > 
+> > > return :
+> > >    {
+> > >       "name": "Branch",
+> > >       "products": "[Journeys,Email,Universal Ads]"
+> > >    }
 > > >
 
 list of dependencies used
