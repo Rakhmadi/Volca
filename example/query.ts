@@ -13,7 +13,7 @@ AppServe(async()=>{
     
     Router.get('/query',()=>{
         return Request.toResponse({
-            body:JSON.stringify(Request.query)
+            body:JSON.stringify(Request.getQuery())
         })
     })
     

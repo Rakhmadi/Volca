@@ -38,7 +38,7 @@ interface IRes{
     status?: number;
     headers?:HeadersInit;
     content?:any;
-    body?: any;
+    body?: Uint8Array | Deno.Reader | string | any;
 }
 
 export type TMiddleware = (next:()=>void)=>any;
@@ -110,7 +110,7 @@ export class Request {
         }
      }
 
-     static toResponse(Respon:IRes={status:200,body:'',content:'text/plain'}){
+     static toResponse(Respon:IRes={status:200,content:'text/plain'}){
         const header=new Headers({...Respon.headers,...Request.HeaderList})
 
         let x = Request.cookieList
@@ -132,7 +132,7 @@ export class Request {
 
         Request.RequestServ.respond({
             status:Respon.status,
-            body:new TextEncoder().encode(Respon.body),
+            body:Respon.body,
             headers:header
         })
     }
