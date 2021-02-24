@@ -2,6 +2,8 @@
 
 Simple Deno Web Framework 
 
+## Deno Version (1.7+)
+
 ## Basic Usage
 
 ```ts
