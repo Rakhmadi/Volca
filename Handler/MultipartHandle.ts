@@ -29,7 +29,6 @@ export class Multipart{
         } else {
             return `Multipart: NULL because header ${Multipart.TypeHeader}`
         }
-        
     }
     static async ReadAll(){
         if (Multipart.GetingHeaderValid()) {
@@ -40,4 +39,3 @@ export class Multipart{
         }
     }
 }
- 

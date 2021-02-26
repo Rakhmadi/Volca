@@ -17,7 +17,7 @@ export enum Method {
   }
 
 class Route{
-    
+
     TableRoute:IRoute[] = []
     ParamsParser(pathProp:string,pathorigin:string){
         //inRoute
@@ -26,22 +26,22 @@ class Route{
         //from url get
         let url = pathorigin
         if(template.match(/:[^/]+/g)){
-           
+
             // find params and replace them with regex
             var sdsd =  String(template.match(/:[^/]+/g).join('')).substring(1).split(':')
             template = template.replace(/:[^/]+/g, '([^/]+)')
             // the template is now a regex string '/service/[^/]+/getall'
             // which is essentially '/service/ ANYTHING THAT'S NOT A '/' /getall'
-            
+
             // convert to regex and only match from start to end
             template = new RegExp(`^${template}$`)
-            
+
             // ^ = beggin
             // $ = end
             // the template is now /^\/service\/([^\/]+)\/getall$/
 
             var matches:any = url.match(template)
-            let nsx 
+            let nsx
             if (matches === null) {
                  nsx = null
             } else {
@@ -62,7 +62,7 @@ class Route{
             method:Method.GET,
             handle:controll,
             middleware:middleware
-        })         
+        })
     }
      public post(pathx:string,controll:Function,middleware:Array<Function> = []){
          this.TableRoute.push({

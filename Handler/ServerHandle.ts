@@ -1,4 +1,4 @@
-import { ServerRequest, 
+import { ServerRequest,
          Response as ServerResponse ,
          listenAndServe,serve,
          HTTPOptions } from "../vendor/core/http/http.ts";
@@ -19,7 +19,7 @@ export interface ICookie {
     name: string;
     // Value Cookie
     value: string;
-    // The maximum lifetime of the cookie as an HTTP-date timestamp 
+    // The maximum lifetime of the cookie as an HTTP-date timestamp
     expires?: Date;
     // Number of seconds until the cookie expires
     maxAge?: number;
@@ -69,7 +69,7 @@ export class Request {
      }
      static getCookie():object{
         let CookieHeader = Request.RequestServ.headers.get("Cookie");
-        let toJ = '{"'+CookieHeader.replace(/;/g, '","') 
+        let toJ = '{"'+CookieHeader.replace(/;/g, '","')
         .replace(/=/g, '":"') + '"}'
          return JSON.parse(toJ)
      }
@@ -83,11 +83,11 @@ export class Request {
      }
 
      static getQuery():object{
-        
-        let search = Request.RequestServ.url.split('?')[1];   
 
-        let getQuery = '{"' + decodeURI(search) 
-        .replace(/"/g, '\\"').replace(/&/g, '","') 
+        let search = Request.RequestServ.url.split('?')[1];
+
+        let getQuery = '{"' + decodeURI(search)
+        .replace(/"/g, '\\"').replace(/&/g, '","')
         .replace(/=/g, '":"') + '"}'
 
         if (getQuery === '{"undefined"}' || getQuery === '{""}') {
@@ -101,7 +101,6 @@ export class Request {
         const x = await Deno.readAll(Request.body)
         const decoder =new TextDecoder()
         const vol =decoder.decode(x)
-        
         if (Request.RequestServ.headers.get("Content-Type").split(";")[0] === "application/x-www-form-urlencoded") {
             const g = JSON.parse('{"' + vol.replace(/&/g, "\",\"").replace(/=/g,"\":\"") + '"}')
             return g
@@ -129,7 +128,7 @@ export class Request {
         }
 
         header.append("Content-Type",Respon.content == undefined ? "text/plain charset=utf-8" : Respon.content)
-        
+
         Request.RequestServ.respond({
             status:Respon.status,
             body:Respon.body,
@@ -149,10 +148,10 @@ export class Request {
                body:await EtaEngine(decoder.decode(datax),data)
            })
         }catch(error){
-           
-                
+
+
             return Request.toResponse({
-               
+
                 status:500,
                 content:'text/html; charset=utf-8',
                 body:errCatch("File Not Found",Request)
@@ -203,9 +202,8 @@ async function RouterHandle(req:any,middleware:TMiddleware[]){
             body:msgStatus(404,'NotFound')
       })
     }
-    
+
     for (const r of Router.TableRoute) {
-        
         if (r.path === Request.path && r.method === Request.method) {
             try {
                 function Corelayer(next:any){
@@ -234,9 +232,7 @@ async function RouterHandle(req:any,middleware:TMiddleware[]){
 
        } catch (error) {
            if (error && error instanceof Deno.errors.NotFound) {
-
             NotFoundReq()
-            
            }else{
 
             return Request.toResponse({
@@ -244,10 +240,8 @@ async function RouterHandle(req:any,middleware:TMiddleware[]){
                 content:'text/html; charset=utf-8',
                 body:errCatch(error.stack,Request)
             })
-            
            }
        }
-         
      } else {
         NotFoundReq()
      }

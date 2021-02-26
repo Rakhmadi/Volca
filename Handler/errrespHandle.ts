@@ -23,10 +23,10 @@ export function msgStatus(codestatus:number,msg:string)
             </center>
         </body>
         </html>`
-    
+
 }
 export function errCatch(msg:any,rg:any){
-    let x:any 
+    let x:any
     for (const iterator of rg.headers) {
         x+=`
         <br>${iterator}
@@ -36,7 +36,7 @@ export function errCatch(msg:any,rg:any){
     for (const key in rg.params) {
         c+=`<br>${key} : ${rg.params[key]}`
     }
-    
+
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -51,7 +51,7 @@ export function errCatch(msg:any,rg:any){
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 background-color: rgb(53, 33, 73);
             }
-    
+
             .error-iner-box{
                 padding:40px;
                 margin:20px;
@@ -68,7 +68,7 @@ export function errCatch(msg:any,rg:any){
                 border-left: solid 5px #535dfd;
                 overflow: auto;
             }
-            
+
         </style>
     </head>
     <body>
@@ -97,6 +97,6 @@ export function errCatch(msg:any,rg:any){
         </div>
     </body>
     </html>`
-  
-    
+
+
 }
