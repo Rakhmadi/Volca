@@ -129,12 +129,12 @@ export class Request {
         }
 
         header.append("Content-Type",Respon.content == undefined ? "text/plain charset=utf-8" : Respon.content)
-
+        
         Request.RequestServ.respond({
             status:Respon.status,
             body:Respon.body,
             headers:header
-        })
+        }).catch(() => {})
     }
 
 
@@ -146,7 +146,7 @@ export class Request {
            Request.toResponse({
                status:200,
                content:' text/html; charset=UTF-8',
-               body:EtaEngine(decoder.decode(datax),data)
+               body:await EtaEngine(decoder.decode(datax),data)
            })
         }catch(error){
            
@@ -169,7 +169,7 @@ export class Request {
          })
      }
 
-     static toResponseJson(Json:Array<any> | any ,status:number,headers:HeadersInit = {}){
+     static toResponseJson(Json:Array<any> | any ,status:number = 200 ,headers:HeadersInit = {}){
         Request.toResponse({
             content:'application/json',
             body:JSON.stringify(Json),
@@ -178,8 +178,8 @@ export class Request {
      }
 }
 
-function EtaEngine(FileString:string,data:object = {}){
-    return Eta.render(FileString,data)
+async function EtaEngine(FileString:string,data:object = {}){
+    return await Eta.render(FileString,data)
 }
 
 function stepper (...steps:TMiddleware[]):any{
@@ -195,7 +195,7 @@ function handle(req:ServerRequest){
     Request.method = req.method
 }
 
-async function RouterHandle(req:any){
+async function RouterHandle(req:any,middleware:TMiddleware[]){
     function NotFoundReq(){
         return req.respond({
             status:404,
@@ -213,7 +213,7 @@ async function RouterHandle(req:any){
                     next()
                 }
 
-                return stepper(...r.middleware,Corelayer)
+                return stepper(...r.middleware,...middleware,Corelayer)
 
             } catch (error) {
 
@@ -222,7 +222,6 @@ async function RouterHandle(req:any){
                     content:'text/html; charset=utf-8',
                     body:errCatch(error.stack,Request)
                 })
-
             }
         }
      }
@@ -256,20 +255,20 @@ async function RouterHandle(req:any){
 
 
 
-export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions):Promise<any>{
+export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions,middleware:TMiddleware[] = []):Promise<any>{
     const s = serve(opt);
     console.log(`\u001b[34;1m ⚙️  App Runing at : http://${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
     for await (const req of s) {
         try {
              handle(req)
              f()
-             RouterHandle(req)
+             RouterHandle(req,middleware)
             Router.TableRoute = []
         } catch (error) {
             req.respond({
                 status:500,
                 body:`${error}`
             })
-        }      
+        }
   }
 }
