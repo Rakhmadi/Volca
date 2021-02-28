@@ -142,7 +142,7 @@ export class Request {
         try{
            const decoder = new TextDecoder("utf-8");
            const datax = await Deno.readFile(file);
-           Request.toResponse({
+           await Request.toResponse({
                status:200,
                content:' text/html; charset=UTF-8',
                body:await EtaEngine(decoder.decode(datax),data)
@@ -223,12 +223,12 @@ async function RouterHandle(req:any,middleware:TMiddleware[]){
             }
         }
      }
-     const urlPath = Request.path.split('/')
+     const urlPath = await Request.path.split('/')
      if (urlPath[1] === 'public') {
        try {
 
-            const FileContent= await serveFile(req,`${Deno.cwd()}/${Request.path}`)
-            return req.respond(FileContent)
+            const FileContent= await serveFile(req,`${Deno.cwd()}/${await Request.path}`)
+            return await req.respond(FileContent)
 
        } catch (error) {
            if (error && error instanceof Deno.errors.NotFound) {
@@ -254,9 +254,9 @@ export async function AppServe(f:()=>Promise<any>,opt:HTTPOptions,middleware:TMi
     console.log(`\u001b[34;1m ⚙️  App Runing at : http://${opt.hostname ? opt.hostname : "0.0.0.0"}:${opt.port}`);
     for await (const req of s) {
         try {
-             handle(req)
-             f()
-             RouterHandle(req,middleware)
+             await handle(req)
+             await f()
+             await RouterHandle(req,middleware)
             Router.TableRoute = []
         } catch (error) {
             req.respond({

@@ -7,9 +7,9 @@ import {AppServe,Request,Router,Multipart} from "../mod.ts"
           })
 
           Router.post('/post',async()=>{
-             
+
             return Request.toResponseJson(await Request.formField(),200)
-             
+
           })
 
     },{port:8080})

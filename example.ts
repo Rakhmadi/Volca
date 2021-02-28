@@ -3,7 +3,6 @@ import {AppServe,Router,Request,str_random} from "./mod.ts"
 
           Router.get(`/`,async ()=>{
            Request.toResponse({
-             content:'text/html; charset=UTF-8 ',
              body:'Hello world'
            })
          })
